@@ -40,7 +40,22 @@ app.MapHealthChecks("/health");
 // Http-методы, путь, статус ответа и длительность выполнения
 app.UseSerilogRequestLogging(options =>
 {
-    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+
+    // EnrichDiagnosticContext позволяет добавлять в лог дополнительные свойства, которые будут доступны в шаблоне сообщения.
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        // TraceIdentifier - это уникальный идентификатор запроса, который генерируется ASP.NET Core для каждого HTTP-запроса. Он полезен для трассировки запросов в логах.
+        diagnosticContext.Set(
+            "RequestId",
+            httpContext.TraceIdentifier);
+
+        // TraceId - это идентификатор трассировки, который может быть использован для корреляции логов между различными сервисами в распределённой системе. В ASP.NET Core он совпадает с TraceIdentifier, но в других системах может быть другим.
+        diagnosticContext.Set(
+            "TraceId",
+            httpContext.TraceIdentifier);
+    };
 });
 
 app.MapGet("/", () => Results.Ok(new
