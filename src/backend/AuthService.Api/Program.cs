@@ -1,4 +1,5 @@
 using AuthService.Infrastructure.Postgres.Persistence;
+using AuthService.Application.Features.Demo.GetDemo;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.Framework.Middlewares;
@@ -22,6 +23,9 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
    options.UseNpgsql(
         builder.Configuration.GetConnectionString("AuthDbConnection"));
 });
+
+builder.Services.AddControllers();
+builder.Services.AddScoped<GetDemoQueryHandler>();
 
 // Health checks - это встроенная проверка: "сервис сейчас работает нормально?"
 // Например, приложение может быть запущено, но PostgreSQL недоступен. 
@@ -61,12 +65,7 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 
+app.MapControllers();
 app.MapHealthChecks("/health");
-
-app.MapGet("/", () => Results.Ok(new
-{
-    service = "AuthService",
-    status = "running"
-}));
 
 app.Run();
