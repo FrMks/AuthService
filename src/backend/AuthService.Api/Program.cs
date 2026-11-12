@@ -1,7 +1,20 @@
 using AuthService.Infrastructure.Postgres.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Подключаем Serilog как основной провайдер логирования приложения
+// Настройки Serilog читаются из appsettings.json и переменных окружения
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration
+        // Читаем секциб "Serilog" из конфигурации приложения
+        .ReadFrom.Configuration(context.Configuration)
+        // Добавляем в логи значения из LogContext:
+        // TraceId, RequestId и другие свойства запроса
+        .Enrich.FromLogContext();
+});
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
 {
@@ -21,6 +34,14 @@ builder.Services
 var app = builder.Build();
 
 app.MapHealthChecks("/health");
+
+// Это middleware, который будет перехватывать все необработанные исключения в приложении и логировать их через Serilog.
+// Логируем каждый HTTP-запрос через Serilog
+// Http-методы, путь, статус ответа и длительность выполнения
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+});
 
 app.MapGet("/", () => Results.Ok(new
 {

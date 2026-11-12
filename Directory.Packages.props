@@ -8,6 +8,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
     <!-- Shared packages from GitHub Packages -->
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.15" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.1-dev-02312" />
+    <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Shared.Core" Version="1.0.1" />
     <PackageVersion Include="Shared.Framework" Version="1.0.1" />
     <PackageVersion Include="Shared.SharedKernel" Version="1.0.1" />
