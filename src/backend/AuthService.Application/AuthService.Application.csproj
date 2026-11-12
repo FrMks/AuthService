@@ -3,7 +3,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AuthService.Domain\AuthService.Domain.csproj" />
     <ProjectReference Include="..\AuthService.Contracts\AuthService.Contracts.csproj" />
-    <PackageReference Include="Shared.Core" />
     <PackageReference Include="Shared.SharedKernel" />
   </ItemGroup>
 

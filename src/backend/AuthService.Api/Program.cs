@@ -3,6 +3,7 @@ using AuthService.Application.Features.Demo.GetDemo;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.Framework.Middlewares;
+using Wolverine;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,21 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<GetDemoQueryHandler>();
+
+// Подключаем Wolverine как mediator для command/query сообщений
+builder.Host.UseWolverine(options =>
+{
+    // Handler находится в Application assembly,
+    // а не в основном API assembly
+    options.ApplicationAssembly = typeof(GetDemoQueryHandler).Assembly;
+
+    // Пока используем Wolverine только внутри процесса
+    // RabbitMQ, очереди и durable messaging пока не включаем
+    options.Durability.Mode = DurabilityMode.MediatorOnly;
+
+    // Включаем подробные Wolverine traces для InvokeAsync
+    options.InvokeTracing = InvokeTracingMode.Full;
+});
 
 // Health checks - это встроенная проверка: "сервис сейчас работает нормально?"
 // Например, приложение может быть запущено, но PostgreSQL недоступен. 

@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using Shared.Core.Abstractions;
 using Shared;
 using Shared.Framework.EndpointResults;
+using Wolverine;
 
 namespace AuthService.Api.Features.Demo.GetDemo;
 
@@ -19,14 +20,15 @@ public sealed class GetDemoController : ControllerBase
 {
     [HttpGet]
     public async Task<EndpointResult<GetDemoResponse>> Get(
-        [FromServices] IQueryHandler<GetDemoQuery, Result<GetDemoResponse, Errors>> handler,
+        [FromServices] IMessageBus bus,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(handler);
+        ArgumentNullException.ThrowIfNull(bus);
 
-        Result<GetDemoResponse, Errors> result = await handler.Handle(
-            new GetDemoQuery(),
-            cancellationToken).ConfigureAwait(false);
+        Result<GetDemoResponse, Errors> result =
+            await bus.InvokeAsync<Result<GetDemoResponse, Errors>>(
+                new GetDemoQuery(),
+                cancellationToken).ConfigureAwait(false);
 
         if (result.IsFailure)
             return result.ConvertFailure<GetDemoResponse>();

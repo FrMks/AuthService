@@ -12,13 +12,14 @@
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Formatting.Compact" />
     <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AuthService.Application\AuthService.Application.csproj" />
     <ProjectReference Include="..\AuthService.Infrastructure.Postgres\AuthService.Infrastructure.Postgres.csproj" />
     <ProjectReference Include="..\AuthService.Contracts\AuthService.Contracts.csproj" />
-    <PackageReference Include="Shared.Core" />
     <PackageReference Include="Shared.Framework" />
     <PackageReference Include="Shared.SharedKernel" />
   </ItemGroup>
