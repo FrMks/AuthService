@@ -1,6 +1,7 @@
 using AuthService.Infrastructure.Postgres.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Shared.Framework.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,9 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapHealthChecks("/health");
+// Глобально обрабатываем непредвиденные исключения.
+// Middleware формирует единый формат ошибки и добавляет trace ID
+app.UseSharedExceptionHandling();
 
 // Это middleware, который будет перехватывать все необработанные исключения в приложении и логировать их через Serilog.
 // Логируем каждый HTTP-запрос через Serilog
@@ -57,6 +60,8 @@ app.UseSerilogRequestLogging(options =>
             httpContext.TraceIdentifier);
     };
 });
+
+app.MapHealthChecks("/health");
 
 app.MapGet("/", () => Results.Ok(new
 {
