@@ -6,3 +6,8 @@ bin/
 obj/
 .vs/
 .idea/
+
+# Frontend
+node_modules/
+.next/
+out/
