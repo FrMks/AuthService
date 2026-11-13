@@ -3,7 +3,6 @@ using AuthService.Contracts.Demo;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
-using Shared.Core.Abstractions;
 using Shared;
 using Shared.Framework.EndpointResults;
 using Wolverine;

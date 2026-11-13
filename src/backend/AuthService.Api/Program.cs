@@ -27,6 +27,9 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Подключаем Wolverine как mediator для command/query сообщений
 builder.Host.UseWolverine(options =>
 {
@@ -52,6 +55,12 @@ builder.Services
         tags: ["ready"]); // Теги нужны для того, чтобы можно было запускать только определённые проверки. Например, мы можем запускать только проверки с тегом "ready", когда сервис запускается в Kubernetes, а проверки с тегом "live" - когда Kubernetes проверяет, что процесс жив и не завис.
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // Глобально обрабатываем непредвиденные исключения.
 // Middleware формирует единый формат ошибки и добавляет trace ID
