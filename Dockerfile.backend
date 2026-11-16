@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1.7
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+WORKDIR /src
+
+COPY global.json .
+COPY Directory.Build.props .
+COPY Directory.Packages.props .
+COPY nuget.config .
+COPY AuthService.slnx .
+
+COPY src ./src
+COPY tests ./tests
+
+RUN --mount=type=secret,id=github_pat \
+    --mount=type=secret,id=github_user \
+    set -e; \
+    cp nuget.config /tmp/nuget.auth.config; \
+    GITHUB_PAT="$(cat /run/secrets/github_pat)"; \
+    GITHUB_USER="$(cat /run/secrets/github_user)"; \
+    (dotnet nuget remove source github \
+      --configfile /tmp/nuget.auth.config || true); \
+    dotnet nuget add source \
+      "https://nuget.pkg.github.com/FrMks/index.json" \
+      --name github \
+      --username "$GITHUB_USER" \
+      --password "$GITHUB_PAT" \
+      --store-password-in-clear-text \
+      --configfile /tmp/nuget.auth.config; \
+    dotnet restore AuthService.slnx \
+      --configfile /tmp/nuget.auth.config; \
+    rm -f /tmp/nuget.auth.config
+
+RUN dotnet publish \
+    src/backend/AuthService.Api/AuthService.Api.csproj \
+    --configuration Release \
+    --output /app/publish \
+    --no-restore
+
+RUN dotnet tool install --global dotnet-ef --version 10.*
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+RUN dotnet ef migrations bundle \
+    --project src/backend/AuthService.Infrastructure.Postgres/AuthService.Infrastructure.Postgres.csproj \
+    --startup-project src/backend/AuthService.Api/AuthService.Api.csproj \
+    --configuration Release \
+    --no-build \
+    --output /app/efbundle
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /app/publish .
+COPY --from=build /app/efbundle ./efbundle
+
+RUN chmod +x ./efbundle
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "AuthService.Api.dll"]
