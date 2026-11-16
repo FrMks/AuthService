@@ -44,5 +44,39 @@ services:
       migrations:
         condition: service_completed_successfully
 
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: authservice-frontend
+    environment:
+      NODE_ENV: development
+    expose:
+      - "3000"
+    volumes:
+      - ./src/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command:
+      - npm
+      - run
+      - dev
+      - --
+      - --hostname
+      - 0.0.0.0
+    depends_on:
+      - authservice
+
+  nginx:
+    image: nginx:alpine
+    container_name: authservice-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - authservice
+      - frontend
+
 volumes:
   authservice-postgres-data:
