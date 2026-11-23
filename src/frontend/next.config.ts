@@ -1,12 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // rewrites() - это функция, которая позволяет перенаправлять запросы с одного URL на другой. В данном случае, все запросы, начинающиеся с "/api/", будут перенаправлены на "http://localhost:8080/". Это полезно для разработки, когда фронтенд и бэкенд работают на разных портах.
+  // В Docker backend доступен по имени сервиса authservice, а при локальном
+  // запуске frontend без Docker — через localhost.
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8080/:path*",
+        destination: `${process.env.BACKEND_URL ?? "http://localhost:8080"}/:path*`,
       },
     ];
   },

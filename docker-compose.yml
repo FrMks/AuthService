@@ -57,6 +57,7 @@ services:
     container_name: authservice-frontend
     environment:
       NODE_ENV: development
+      BACKEND_URL: http://authservice:8080
     expose:
       - "3000"
     volumes:
