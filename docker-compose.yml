@@ -32,6 +32,12 @@ services:
         condition: service_healthy
 
   authservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      secrets:
+        - github_pat
+        - github_user
     image: authservice-backend
     container_name: authservice-api
     environment:
@@ -80,3 +86,9 @@ services:
 
 volumes:
   authservice-postgres-data:
+
+secrets:
+  github_pat:
+    environment: GITHUB_PAT
+  github_user:
+    environment: GITHUB_USER

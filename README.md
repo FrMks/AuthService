@@ -12,7 +12,6 @@
 
 ```powershell
 Copy-Item .env.example .env
-docker build --secret id=github_pat,env=GITHUB_PAT --secret id=github_user,env=GITHUB_USER -f Dockerfile.backend -t authservice-backend .
 docker compose up --build
 ```
 
