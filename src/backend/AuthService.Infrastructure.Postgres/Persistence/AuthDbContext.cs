@@ -1,16 +1,18 @@
+using AuthService.Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthService.Infrastructure.Postgres.Persistence;
 
 public sealed class AuthDbContext(
     DbContextOptions<AuthDbContext> options)
-    : DbContext(options)
+    : IdentityDbContext<Account, Role, Guid>(options)
 {
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        // Дефолтная схема - auth, чтобы все таблицы создавались в ней, а не в public
-        modelBuilder.HasDefaultSchema("auth");
+        base.OnModelCreating(builder);
 
-        base.OnModelCreating(modelBuilder);
+        // Дефолтная схема - auth, чтобы все таблицы создавались в ней, а не в public
+        builder.HasDefaultSchema("auth");
     }
 }
