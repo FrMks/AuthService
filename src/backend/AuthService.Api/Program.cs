@@ -1,3 +1,4 @@
+using AuthService.Api;
 using AuthService.Infrastructure.Postgres.Persistence;
 using AuthService.Application.Features.Demo.GetDemo;
 using Microsoft.EntityFrameworkCore;
@@ -19,16 +20,7 @@ builder.Host.UseSerilog((context, configuration) =>
         .Enrich.FromLogContext();
 });
 
-builder.Services.AddDbContext<AuthDbContext>(options =>
-{
-   options.UseNpgsql(
-        builder.Configuration.GetConnectionString("AuthDbConnection"));
-});
-
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddProgramDependencies(builder.Configuration);
 
 // Подключаем Wolverine как mediator для command/query сообщений
 builder.Host.UseWolverine(options =>
