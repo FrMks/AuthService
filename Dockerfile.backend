@@ -41,6 +41,10 @@ RUN dotnet publish \
 RUN dotnet tool install --global dotnet-ef --version 10.*
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
+# EF bundle only needs a connection string to construct the DbContext model.
+# The actual database connection is supplied by docker-compose at runtime.
+ENV ConnectionStrings__AuthDbConnection="Host=localhost;Port=5432;Database=authservice;Username=authservice;Password=design-time"
+
 RUN dotnet ef migrations bundle \
     --project src/backend/AuthService.Infrastructure.Postgres/AuthService.Infrastructure.Postgres.csproj \
     --startup-project src/backend/AuthService.Api/AuthService.Api.csproj \

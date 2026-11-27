@@ -23,6 +23,8 @@ services:
   migrations:
     image: authservice-backend
     container_name: authservice-migrations
+    environment:
+      ConnectionStrings__AuthDbConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     entrypoint: ["/app/efbundle"]
     command:
       - "--connection"
