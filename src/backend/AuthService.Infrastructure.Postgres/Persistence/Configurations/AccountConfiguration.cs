@@ -28,5 +28,15 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(account => account.LockoutEnd).HasColumnName("lockout_end");
         builder.Property(account => account.LockoutEnabled).HasColumnName("lockout_enabled");
         builder.Property(account => account.AccessFailedCount).HasColumnName("access_failed_count");
+        builder.Property(account => account.DisplayName)
+            .HasColumnName("display_name")
+            .HasMaxLength(200)
+            .IsRequired();
+        builder.Property(account => account.CreatedAt)
+            .HasColumnName("created_at")
+            .IsRequired();
+        builder.Property(account => account.IsActive)
+            .HasColumnName("is_active")
+            .IsRequired();
     }
 }

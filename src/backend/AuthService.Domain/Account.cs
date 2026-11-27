@@ -9,5 +9,18 @@ namespace AuthService.Domain;
 /// </summary>
 public sealed class Account : IdentityUser<Guid>
 {
-    
+    /// <summary>
+    /// Имя пользователя, отображаемое в интерфейсе приложения.
+    /// </summary>
+    public string DisplayName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Момент создания учётной записи.
+    /// </summary>
+    public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>
+    /// Признак доступности учётной записи без удаления её данных.
+    /// </summary>
+    public bool IsActive { get; set; } = true;
 }
