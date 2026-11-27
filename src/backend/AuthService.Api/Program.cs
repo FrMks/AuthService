@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.Framework.Middlewares;
 using Wolverine;
+using Microsoft.AspNetCore.Identity;
+using AuthService.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +49,19 @@ builder.Services
         tags: ["ready"]); // Теги нужны для того, чтобы можно было запускать только определённые проверки. Например, мы можем запускать только проверки с тегом "ready", когда сервис запускается в Kubernetes, а проверки с тегом "live" - когда Kubernetes проверяет, что процесс жив и не завис.
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    // UserManager управляет учётными записями: создаёт пользователей,
+    // хэширует и проверяет пароли, меняет email и выполняет сброс пароля.
+    scope.ServiceProvider
+        .GetRequiredService<UserManager<Account>>();
+
+    // SignInManager отвечает за процесс входа: проверяет пароль,
+    // учитывает lockout после неудачных попыток и управляет состоянием входа.
+    scope.ServiceProvider
+        .GetRequiredService<SignInManager<Account>>();
+}
 
 if (app.Environment.IsDevelopment())
 {
