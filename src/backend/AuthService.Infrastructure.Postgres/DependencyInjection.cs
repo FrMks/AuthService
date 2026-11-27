@@ -26,7 +26,11 @@ public static class PostgresServiceCollectionExtensions
         }
 
         services.AddDbContext<AuthDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(
+                connectionString,
+                npgsqlOptions => npgsqlOptions.MigrationsHistoryTable(
+                    "__EFMigrationsHistory",
+                    "auth")));
 
         return services;
     }
