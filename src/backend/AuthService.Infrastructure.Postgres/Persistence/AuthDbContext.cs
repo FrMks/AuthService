@@ -16,8 +16,8 @@ public sealed class AuthDbContext(
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-        base.OnModelCreating(builder);
+        base.OnModelCreating(
+            builder ?? throw new ArgumentNullException(nameof(builder)));
 
         // Identity состоит из пользовательской и ролевой сущностей и связанных с ними
         // таблиц claims, связей ролей, внешних логинов и токенов.
